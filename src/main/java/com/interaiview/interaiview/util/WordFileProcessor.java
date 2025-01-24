@@ -15,7 +15,6 @@ public class WordFileProcessor implements FileProcessor{
 
     @Override
     public String extractText(File file) throws IOException {
-
         try(FileInputStream fis = new FileInputStream(file);
             XWPFDocument document = new XWPFDocument(fis)) {
 

@@ -8,11 +8,11 @@ import java.util.Map;
 
 @Component
 public class FileProcessorFactory {
+
     private final Map<String, FileProcessor> processorMap;
 
     public FileProcessorFactory() {
         processorMap = new HashMap<>();
-
         try {
             processorMap.put("pdf", new PdfFileProcessor());
             processorMap.put("word", new WordFileProcessor());
