@@ -27,11 +27,12 @@ public class AIServiceTest {
     }
 
     @Test
-    public void serviceTest() throws IOException {
+    public void generateQuestionTest() throws IOException {
         File file = new ClassPathResource("testdata/word_sample.docx").getFile();
-        QuestionDTO questions = aiService.generateQuestion(file, "word");
-        System.out.println(questions.getQuestions());
 
+        QuestionDTO questions = aiService.generateQuestion(file, "word");
+
+        System.out.println(questions.getQuestions());
         Assertions.assertThat(questions.getQuestions().size()).isEqualTo(5);
     }
 }
