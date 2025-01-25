@@ -7,6 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class QuestionDTO {
-    private List<String> questions;
+public class InterviewResultDTO {
+    private List<QaPairDTO> qas;
+    private String result;
 }
