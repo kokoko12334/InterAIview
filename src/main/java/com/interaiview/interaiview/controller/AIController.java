@@ -14,13 +14,14 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:3000", "https://aiinterview-dcff3.web.app"}, allowedHeaders = "*")
 @RequestMapping("/api/ai")
 public class AIController {
 
     private final AIService aiService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> generateQuestion(@RequestParam("file123") MultipartFile file) throws IOException {
+    public ResponseEntity<?> generateQuestion(@RequestParam("file") MultipartFile file) throws IOException {
         ResponseEntity<String> validationResponse = FileValidator.validateFile(file);
 
         if (validationResponse != null) {
