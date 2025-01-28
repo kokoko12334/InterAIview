@@ -10,12 +10,15 @@ import java.util.List;
 
 @Component
 public class FileValidator {
-    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    private static final long MAX_FILE_SIZE = 1024L * 1024L; // 1MB
     private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("doc", "docx", "pdf");
     private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
             "application/msword",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/pdf"
+            "application/pdf",
+            "application/haansoftdocx",
+            "application/docx",
+            "application/doc"
     );
 
     public static ResponseEntity<String> validateFile(MultipartFile file) {
@@ -41,7 +44,6 @@ public class FileValidator {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Invalid file MIME type. Please upload a valid file.");
         }
-
         return null; // null 반환 시 유효성 검사 통과로 간주
     }
 
