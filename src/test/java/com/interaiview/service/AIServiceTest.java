@@ -6,7 +6,8 @@ import com.interaiview.interaiview.dto.InterviewResultDTO;
 import com.interaiview.interaiview.dto.QaPairsDTO;
 import com.interaiview.interaiview.service.AIService;
 import com.interaiview.interaiview.util.FileProcessorFactory;
-import org.assertj.core.api.Assertions;
+import com.openai.models.ChatCompletion;
+import com.openai.models.ChatCompletionCreateParams;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,16 +23,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {AIService.class, FileProcessorFactory.class, OpenAIChatClient.class})
 public class AIServiceTest {
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private final AIService aiService;
 
     @Autowired
     public AIServiceTest(AIService aiService) {
         this.aiService = aiService;
     }
+
+    @MockitoSpyBean
+    private OpenAIChatClient client;
 
     // 파일을 InputStream으로 읽어 MockMultipartFile로 변환
     @NotNull
@@ -44,44 +54,36 @@ public class AIServiceTest {
                 fileInputStream);
     }
 
+    // _response.json파일로 mocking return
+    @NotNull
+    private static ChatCompletion getChatcompletion(String path) throws IOException {
+        File file = new ClassPathResource(path).getFile();
+        return objectMapper.readValue(file, ChatCompletion.class);
+    }
+
     @Test
     public void generateQuestionTest() throws IOException {
         MultipartFile multipartFile = getMultipartFile("testdata/word_sample.docx");
+        doReturn(getChatcompletion("testdata/question_response.json"))
+                .when(client).request(any(ChatCompletionCreateParams.class));
 
         QaPairsDTO questions = aiService.generateQuestion(multipartFile, "word");
 
-        for (int i=0; i < questions.getQas().size(); i++) {
-            System.out.println("####################");
-            String q = questions.getQas().get(i).getQuestion();
-            String a = questions.getQas().get(i).getAnswer();
-            String f = questions.getQas().get(i).getFeedback();
-            System.out.println("question: " + q);
-            System.out.println("answer: " + a);
-            System.out.println("feedback: " + f);
-        }
-        Assertions.assertThat(questions.getQas().size()).isEqualTo(5);
+        assertThat(questions.getQas().size()).isEqualTo(3);
+        assertThat(questions.getQas().get(0).getQuestion()).contains("Can you describe a specific project");
     }
 
     @Test
     public void generateResultTest() throws IOException {
         File file = new ClassPathResource("testdata/qas_sample.json").getFile();
-        ObjectMapper objectMapper = new ObjectMapper();
+        doReturn(getChatcompletion("testdata/result_response.json"))
+                .when(client).request(any(ChatCompletionCreateParams.class));
 
-//        try {
-//            QaPairsDTO qaPairsDTO = objectMapper.readValue(file, QaPairsDTO.class);
-//            InterviewResultDTO result = aiService.generateInterviewResult(qaPairsDTO);
-//            for (int i=0; i < result.getQas().size(); i++) {
-//                System.out.println("####################");
-//                String q = result.getQas().get(i).getQuestion();
-//                String a = result.getQas().get(i).getAnswer();
-//                String f = result.getQas().get(i).getFeedback();
-//                System.out.println("question: " + q);
-//                System.out.println("answer: " + a);
-//                System.out.println("feedback: " + f);
-//            }
-//            System.out.println("total: " + result.getResult());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        QaPairsDTO qaPairsDTO = objectMapper.readValue(file, QaPairsDTO.class);
+
+        InterviewResultDTO result = aiService.generateInterviewResult(qaPairsDTO);
+
+        assertThat(result.getQas().size()).isEqualTo(2);
+        assertThat(result.getQas().get(0).getFeedback()).contains("The answer is well-structured and highlights specific");
     }
 }
