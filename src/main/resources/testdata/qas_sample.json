@@ -1,0 +1,19 @@
+{
+  "qas": [
+    {
+      "question": "Can you describe your experience in conducting financial analyses and how it has prepared you for this role?",
+      "answer": "In my previous role as a financial analyst, I performed various financial analyses including budget forecasting, variance analysis, and cost optimization. These experiences have given me the skills to quickly understand complex financial structures and prepare me for this role in your organization.",
+      "feedback": ""
+    },
+    {
+      "question": "How did you approach the development of your economic model for forecasting stock market trends?",
+      "answer": "I began by collecting historical stock data, considering macroeconomic indicators, and using statistical methods like regression analysis to model trends. I also incorporated machine learning models to enhance accuracy, which allowed me to predict stock price movements with higher precision.",
+      "feedback": ""
+    },
+    {
+      "question": "What steps do you take to ensure data accuracy and reliability in your financial reports?",
+      "answer": "I use a combination of automated data validation tools and manual checks to ensure data accuracy. Additionally, I cross-reference data with trusted sources and collaborate with team members for peer reviews.",
+      "feedback": ""
+    }
+  ]
+}

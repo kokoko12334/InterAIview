@@ -1,0 +1,44 @@
+{
+  "id": "chatcmpl-AvFWDN8FivHS7frdWfLLhi0mau85I",
+  "choices": [
+    {
+      "finishReason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"qas\": [\n    {\n      \"question\": \"Can you describe a specific project where you had to use your applied economics and finance skills to solve a problem?\",\n      \"tip\": \"This question aims to assess the candidate's practical application of their academic knowledge in a real-world scenario.\",\n      \"answer\": \"\",\n      \"feedback\": \"\"\n    },\n    {\n      \"question\": \"In your previous role, how did you handle conflict resolution between different stakeholders?\",\n      \"tip\": \"This question evaluates the candidate's conflict management skills and their ability to navigate complex interpersonal dynamics.\",\n      \"answer\": \"\",\n      \"feedback\": \"\"\n    },\n    {\n      \"question\": \"What strategies did you implement to lead your team effectively in your last position?\",\n      \"tip\": \"This question seeks to understand the candidate's leadership style and their approach to managing teams and projects.\",\n      \"answer\": \"\",\n      \"feedback\": \"\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "audio": null,
+        "functionCall": null,
+        "toolCalls": null,
+        "additionalProperties": {}
+      },
+      "additionalProperties": {}
+    }
+  ],
+  "created": 1738207713,
+  "model": "gpt-4o-mini-2024-07-18",
+  "object_": "chat.completion",
+  "serviceTier": "default",
+  "systemFingerprint": "fp_bd83329f63",
+  "usage": {
+    "completionTokens": 191,
+    "promptTokens": 773,
+    "totalTokens": 964,
+    "completionTokensDetails": {
+      "acceptedPredictionTokens": 0,
+      "audioTokens": 0,
+      "reasoningTokens": 0,
+      "rejectedPredictionTokens": 0,
+      "additionalProperties": {}
+    },
+    "promptTokensDetails": {
+      "audioTokens": 0,
+      "cachedTokens": 0,
+      "additionalProperties": {}
+    },
+    "additionalProperties": {}
+  },
+  "additionalProperties": {}
+}
