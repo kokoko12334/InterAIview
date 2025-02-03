@@ -4,6 +4,9 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+/src/main/resources/application.properties
+/work
+/logs
 
 ### STS ###
 .apt_generated
@@ -42,3 +45,7 @@ gradlew.bat
 gradlew
 /gradle/*
 settings.gradle
+
+### AWS ###
+/key
+command.txt

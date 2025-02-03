@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vosk Real-Time Voice to Text</title>
+    <script src="https://cdn.jsdelivr.net/npm/vosk-browser@0.0.8/dist/vosk.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+
+        #log {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            height: 200px;
+            overflow-y: scroll;
+            background: #f9f9f9;
+        }
+
+        button {
+            font-size: 16px;
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .start-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .stop-btn {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+<h1>Real-Time Voice to Text</h1>
+<button class="start-btn" id="startButton">Start Recording</button>
+<button class="stop-btn" id="stopButton" disabled>Stop Recording</button>
+<div id="log">Your speech will appear here...</div>
+
+<script>
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+    const log = document.getElementById('log');
+
+    let model;
+    let recognizer;
+    let audioStream;
+    let audioContext;
+    let sourceNode;
+    let processorNode;
+
+    // 모델을 로드하는 함수는 수정하지 않습니다
+    async function loadModel() {
+        if (!model) {
+            try {
+                model = await Vosk.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz");
+            } catch (err) {
+                console.error('모델 로드 오류:', err);
+                alert('모델을 로드하는 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            }
+        }
+    }
+
+    async function startRecording() {
+        try {
+            startButton.disabled = true;
+            stopButton.disabled = false;
+
+            // 로그 초기화
+            log.textContent = '';
+
+            // 모델 로드 및 Recognizer 생성
+            await loadModel();
+            recognizer = new model.KaldiRecognizer();
+
+            recognizer.on("result", (message) => {
+                const result = message.result;
+                log.textContent += result.text + " ";
+                log.scrollTop = log.scrollHeight;
+            });
+
+            recognizer.on("partialresult", (message) => {
+                const partial = message.result.partial;
+                console.log('부분 결과:', partial);
+            });
+
+            // 마이크 접근 요청
+            audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            // AudioContext 및 노드 설정
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            sourceNode = audioContext.createMediaStreamSource(audioStream);
+
+            processorNode = audioContext.createScriptProcessor(4096, 1, 1);
+            sourceNode.connect(processorNode);
+            processorNode.connect(audioContext.destination);
+
+            processorNode.onaudioprocess = function (event) {
+                try {
+                    recognizer.acceptWaveform(event.inputBuffer);
+                } catch (error) {
+                    console.error('오디오 처리 오류:', error);
+                }
+            };
+
+        } catch (error) {
+            console.error('녹음 시작 중 오류 발생:', error);
+            if (error.name === 'NotAllowedError' || error.name === 'SecurityError') {
+                alert('마이크 접근이 거부되었습니다. 브라우저 설정에서 마이크 접근을 허용하고 다시 시도해 주세요.');
+            } else {
+                alert('마이크에 접근하는 동안 오류가 발생했습니다. 다시 시도해 주세요.');
+            }
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        }
+    }
+
+    function stopRecording() {
+        if (audioStream) {
+            audioStream.getTracks().forEach(track => track.stop());
+            audioStream = null;
+        }
+        if (sourceNode) {
+            sourceNode.disconnect();
+            sourceNode = null;
+        }
+        if (processorNode) {
+            processorNode.disconnect();
+            processorNode = null;
+        }
+        if (audioContext) {
+            audioContext.close();
+            audioContext = null;
+        }
+        if (recognizer) {
+            recognizer.remove();
+            recognizer = null;
+        }
+        startButton.disabled = false;
+        stopButton.disabled = true;
+    }
+
+    startButton.addEventListener('click', startRecording);
+    stopButton.addEventListener('click', stopRecording);
+</script>
+</body>
+
+</html>
