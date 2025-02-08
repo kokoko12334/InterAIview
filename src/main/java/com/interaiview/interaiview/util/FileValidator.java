@@ -51,7 +51,7 @@ public class FileValidator {
         String fileExtension = getFileExtension(file.getOriginalFilename());
         return switch (fileExtension) {
             case "pdf" -> "pdf";
-            case "doc", "docx" -> "word";
+            case "doc", "docx", "word" -> "word";
             default -> "Unknown";
         };
     }
